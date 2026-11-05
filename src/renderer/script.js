@@ -36,26 +36,26 @@ const volumeFill   = document.getElementById('volume-fill');
 const btnSettings     = document.getElementById('btn-settings');
 const settingsModal   = document.getElementById('settings-modal');
 const btnCloseSettings= document.getElementById('btn-close-settings');
-const resBtns         = document.querySelectorAll('.res-btn');
+const resBtns         = document.querySelectorAll('[data-res]');
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
     console.log("DOMContentLoaded fired!");
-    // Auto-detect or Load Resolution Preference
-    let savedRes = localStorage.getItem('ui_resolution');
-    const explicit = localStorage.getItem('ui_resolution_explicit');
-    if (!savedRes || !explicit) {
-        const w = window.screen.width;
-        if (w >= 3840) savedRes = '4k';
-        else if (w >= 2560) savedRes = '1440p';
-        else if (w >= 1920) savedRes = '1080p';
-        else savedRes = '720p';
-        localStorage.setItem('ui_resolution', savedRes);
-        localStorage.setItem('ui_resolution_explicit', 'true');
-        console.log(`Auto-detected screen width: ${w}px. Setting default UI scale to: ${savedRes}`);
+    try {
+        const settings = await window.api.getSettings();
+        let resolution = settings.resolution;
+        if (!resolution) {
+            const width = window.screen.width;
+            resolution = width >= 3840 ? '4k' : width >= 2560 ? '1440p' : width >= 1920 ? '1080p' : '720p';
+            await window.api.saveSettings({ resolution });
+        }
+        applyResolution(resolution);
+        applyLanguage(settings.language);
+    } catch (error) {
+        console.error('[Settings]', error);
+        applyLanguage('tr');
+        document.getElementById('settings-error').classList.remove('hidden');
     }
-    console.log("Applying resolution:", savedRes);
-    applyResolution(savedRes);
 
     try {
         // Load library from local JSON cache instantly (sub-50ms startup!)
@@ -142,13 +142,13 @@ document.querySelectorAll('.tab').forEach(tab => {
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderLibrary() {
     libraryList.innerHTML = '';
-    if (!library.length) { libraryList.innerHTML = '<div class="empty-msg">Müzik bulunamadı.</div>'; return; }
+    if (!library.length) { libraryList.innerHTML = '<div class="empty-msg">' + t('empty') + '</div>'; return; }
     if (currentView === 'songs') {
-        library.forEach((t, i) => addItem(t.artwork, t.title, t.artist, () => { queue=[...library]; queueIndex=i; playTrack(queue[i]); }));
+        library.forEach((t, i) => addItem(t.artwork, displayMetadata(t.title, 'unknownTrack'), displayMetadata(t.artist, 'unknownArtist'), () => { queue=[...library]; queueIndex=i; playTrack(queue[i]); }));
     } else if (currentView === 'albums') {
-        groupBy(library,'album').forEach((tracks,name) => addItem(tracks[0].artwork, name, tracks[0].artist, () => { queue=tracks; queueIndex=0; playTrack(queue[0]); }));
+        groupBy(library,'album').forEach((tracks,name) => addItem(tracks[0].artwork, displayMetadata(name, 'unknownAlbum'), displayMetadata(tracks[0].artist, 'unknownArtist'), () => { queue=tracks; queueIndex=0; playTrack(queue[0]); }));
     } else {
-        groupBy(library,'artist').forEach((tracks,name) => addItem(tracks[0].artwork, name, `${tracks.length} şarkı`, () => { queue=tracks; queueIndex=0; playTrack(queue[0]); }));
+        groupBy(library,'artist').forEach((tracks,name) => addItem(tracks[0].artwork, displayMetadata(name, 'unknownArtist'), t('songCount').replace('{count}', tracks.length), () => { queue=tracks; queueIndex=0; playTrack(queue[0]); }));
     }
 }
 
@@ -181,9 +181,7 @@ function playTrack(track) {
     albumArt.src = art;
     bgBlur.style.backgroundImage = `url("${art}")`;
 
-    trackTitle.textContent  = track.title  || 'Bilinmeyen Şarkı';
-    trackArtist.textContent = track.artist || '—';
-    trackAlbum.textContent  = track.album  || '—';
+    updateTrackText(track);
 
     vinyl.classList.add('slide-out');
     playerPanel.classList.add('revealed');
@@ -195,7 +193,16 @@ function playTrack(track) {
         .catch(e  => { console.error('[Play]',e); setPlayState(false); });
 }
 
+function updateTrackText(track) {
+    if (!track) return;
+    trackTitle.textContent = displayMetadata(track.title, 'unknownTrack');
+    trackArtist.textContent = displayMetadata(track.artist, 'unknownArtist');
+    trackAlbum.textContent = displayMetadata(track.album, 'unknownAlbum');
+}
+
 function setPlayState(playing) {
+    btnPlay.title = t(playing ? 'pause' : 'play');
+    btnPlay.setAttribute('aria-label', btnPlay.title);
     if (playing) {
         iconPlay.classList.add('hidden');
         iconPause.classList.remove('hidden');
@@ -346,12 +353,7 @@ settingsModal.addEventListener('click', e => {
 });
 
 resBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const res = btn.dataset.res;
-        applyResolution(res);
-        localStorage.setItem('ui_resolution', res);
-        localStorage.setItem('ui_resolution_explicit', 'true');
-    });
+    btn.addEventListener('click', () => persistSettings({ resolution: btn.dataset.res }));
 });
 
 function applyResolution(res) {
@@ -370,3 +372,23 @@ function applyResolution(res) {
         else b.classList.remove('active');
     });
 }
+
+// Save before applying so a failed write leaves the last saved preference active.
+let settingsWrite = Promise.resolve();
+function persistSettings(patch) {
+    settingsWrite = settingsWrite.then(async () => {
+        try {
+            const settings = await window.api.saveSettings(patch);
+            applyResolution(settings.resolution);
+            applyLanguage(settings.language);
+            document.getElementById('settings-error').classList.add('hidden');
+        } catch (error) {
+            console.error('[Settings]', error);
+            document.getElementById('settings-error').classList.remove('hidden');
+        }
+    });
+    return settingsWrite;
+}
+document.querySelectorAll('[data-language]').forEach(btn => {
+    btn.addEventListener('click', () => persistSettings({ language: btn.dataset.language }));
+});

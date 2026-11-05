@@ -475,6 +475,8 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--c-bg);color:
     flex-direction:column;
     gap:12px;
 }
+.setting-group + .setting-group { margin-top:24px; }
+#settings-error { color:var(--c-danger); }
 .setting-group label {
     font-size:0.95rem;
     font-weight:500;
