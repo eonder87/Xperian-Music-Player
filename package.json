@@ -10,12 +10,26 @@
   "author": "Xperian",
   "license": "ISC",
   "dependencies": {
-    "ini": "^7.0.0",
-    "music-metadata": "^12.3.4"
+    "ini": "7.0.0",
+    "music-metadata": "12.3.4"
   },
   "devDependencies": {
-    "electron": "^45.2.3",
-    "electron-builder": "^26.18.0"
+    "electron": "45.2.3",
+    "electron-builder": "26.18.0"
+  },
+  "overrides": {
+    "app-builder-lib": {
+      "minimatch": "11.0.4"
+    },
+    "@electron/universal": {
+      "minimatch": "11.0.4"
+    },
+    "@electron/asar": {
+      ".": "4.3.1",
+      "minimatch": "11.0.4",
+      "glob": "14.0.3"
+    },
+    "global-agent": "4.1.6"
   },
   "build": {
     "appId": "com.xperian.vinylmusic",

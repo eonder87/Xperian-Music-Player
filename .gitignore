@@ -37,8 +37,14 @@ bower_components
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
-# Node package-lock file
-package-lock.json
+# Local application data and Electron runtime files
+/data/
+/temp/
+
+# Legacy application data (migrated to data/ on startup)
+/library.ini
+/library.json
+/settings.json
 
 # Dependency directories
 node_modules/
