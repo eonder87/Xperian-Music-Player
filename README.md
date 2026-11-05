@@ -2,6 +2,167 @@
 
 # 💿 Xperian Music Player
 
+### A classic vinyl experience in the digital world of music.
+
+**A fullscreen Windows music player with vinyl animations for your local music library.**
+
+![Platform](https://img.shields.io/badge/Platform-Windows-0078D4?style=flat-square&logo=windows)
+![Electron](https://img.shields.io/badge/Electron-42-47848F?style=flat-square&logo=electron&logoColor=white)
+![Version](https://img.shields.io/badge/Version-1.0.1-555555?style=flat-square)
+![Status](https://img.shields.io/badge/Status-In%20Development-orange?style=flat-square)
+
+**[English](#english) · [Türkçe](#türkçe)**
+
+</div>
+
+---
+
+<a id="english"></a>
+
+## 🎧 About the Project
+
+**Xperian Music Player** is an **Electron-based** desktop application designed to play music stored on your computer with a visual vinyl record experience.
+
+A spinning record that slides out from behind the album artwork, a blurred background inspired by the cover, and minimal playback controls turn listening to music into a visual experience.
+
+The application works with **local music files**; no online music service is required.
+
+## ✨ Features
+
+### 💿 Vinyl-Style Player
+
+- Animated vinyl record emerging from behind the album cover
+- Record rotation that starts and stops with playback
+- Blurred background based on the current track's cover art
+- Display of track title, artist, and album information
+- Default artwork for tracks without embedded cover art
+
+### 📚 Music Library
+
+- Recursive scanning of a selected folder and its subfolders
+- Browse music by **Songs**, **Albums**, and **Artists**
+- Open an individual audio file directly
+- Read titles, artists, albums, durations, and cover art from audio metadata
+- Cache the music library in `library.json`
+- Load the cached library at startup and rescan the music folder in the background
+
+### 🎛️ Playback Controls
+
+- Play / pause
+- Previous / next track
+- Shuffle
+- Repeat current track
+- Seek within a track using the progress bar
+- Volume adjustment and mute
+
+### 🖥️ Fullscreen Experience
+
+- Fullscreen, frameless player interface
+- Automatic initial scaling based on screen width
+- Manual interface scaling presets: **720p / 1080p / 1440p / 4K**
+- Persistent scaling preferences
+
+## 🎼 Supported Audio Files
+
+| Format | Extension |
+| --- | --- |
+| MP3 | `.mp3` |
+| FLAC | `.flac` |
+| WAV | `.wav` |
+| Ogg | `.ogg` |
+| M4A | `.m4a` |
+
+> **Note:** These extensions are supported by the application's file scanning and selection filters. Actual playback also depends on whether Electron/Chromium supports the codec inside the file.
+
+## 🚀 Installation and Running
+
+### Requirements
+
+- Windows
+- Node.js and npm (to run from source)
+
+### Run from Source
+
+```bash
+git clone https://github.com/eonder87/Xperian-Music-Player.git
+cd Xperian-Music-Player
+npm install
+npm start
+```
+
+Alternatively, after installing the dependencies, you can use `run.bat` on Windows.
+
+### 📦 Build a Portable Version
+
+```bash
+npm run build
+```
+
+The project's `electron-builder` configuration targets **portable** Windows builds. Build artifacts are created in `dist/`.
+
+> **Note:** A prebuilt download may not be available in the repository. If so, you can run the app from source or build it yourself.
+
+## 🎵 How to Use
+
+1. Start the application.
+2. Use the **Folder** icon to select your music library directory, or use **Open File** to add a single track.
+3. Switch between **Songs**, **Albums**, and **Artists** in the left panel.
+4. Select the track, album, or artist you want to listen to.
+5. Use the bottom panel to manage playback, volume, and playback modes.
+6. If needed, change the interface scale in **Settings**.
+
+## 🗂️ Project Structure
+
+```text
+Xperian-Music-Player/
+├── src/
+│   ├── main/
+│   │   ├── main.js           # Electron main process and file operations
+│   │   └── preload.js        # Bridge between main process and UI
+│   └── renderer/
+│       ├── index.html        # Player interface
+│       ├── style.css         # Interface styling and animations
+│       ├── script.js         # Library and playback logic
+│       └── assets/           # UI images
+├── icon.ico                  # Application icon
+├── library.ini               # Selected music folder
+├── library.json              # Cached music library
+├── package.json              # Dependencies and build settings
+└── run.bat                   # Windows launch script
+```
+
+## 🛠️ Technologies Used
+
+| Technology | Purpose |
+| --- | --- |
+| **Electron** | Windows desktop application |
+| **HTML / CSS / JavaScript** | Player UI and interactions |
+| **music-metadata** | Read audio tags and embedded artwork |
+| **ini** | Store the selected music folder setting |
+| **electron-builder** | Build a portable Windows application |
+
+## 💾 Data and Portability
+
+The application stores the selected music folder in `library.ini` and scanned track metadata in `library.json`. These files are used in the application's working directory.
+
+The music files themselves are not copied into the library; the player uses their existing file paths. If you move your music folder, you may need to select it again.
+
+## 🚧 Project Status
+
+The project is under active development. This README documents the current application structure and implemented features in the repository. The documentation will be updated as features are added.
+
+## 🐞 Bug Reports and Suggestions
+
+For bug reports and feature suggestions, please use [GitHub Issues](https://github.com/eonder87/Xperian-Music-Player/issues).
+
+---
+
+<a id="türkçe"></a>
+
+<div align="center">
+
+# 💿 Xperian Music Player
+
 ### Müziğin dijital dünyasında klasik plak deneyimi.
 
 **Yerel müzik arşiviniz için plak animasyonlu, tam ekran bir Windows müzik çalar.**
@@ -10,6 +171,8 @@
 ![Electron](https://img.shields.io/badge/Electron-42-47848F?style=flat-square&logo=electron&logoColor=white)
 ![Version](https://img.shields.io/badge/Version-1.0.1-555555?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Geliştirme%20Aşamasında-orange?style=flat-square)
+
+**[English](#english) · [Türkçe](#türkçe)**
 
 </div>
 
@@ -150,10 +313,6 @@ Proje geliştirilmeye devam etmektedir. Bu README, depodaki mevcut uygulama yap�
 ## 🐞 Hata Bildirimi ve Öneriler
 
 Hata raporları ve geliştirme önerileri için [GitHub Issues](https://github.com/eonder87/Xperian-Music-Player/issues) bölümünü kullanabilirsiniz.
-
-## 🌍 Dil Desteği
-
-Bu belgenin mevcut sürümü **Türkçedir**. İngilizce README ilerleyen aşamalarda eklenecektir.
 
 ---
 
