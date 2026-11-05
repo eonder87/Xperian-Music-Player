@@ -1,0 +1,35 @@
+{
+  "name": "xperian-vinyl-music-player",
+  "version": "1.0.1",
+  "description": "XPERIAN Müzik Çalar",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "author": "Xperian",
+  "license": "ISC",
+  "dependencies": {
+    "ini": "^6.0.0",
+    "music-metadata": "^7.14.0"
+  },
+  "devDependencies": {
+    "electron": "^42.1.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.xperian.vinylmusic",
+    "productName": "XPERIAN Müzik Çalar",
+    "icon": "icon.ico",
+    "files": [
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "icon.ico",
+      "target": "portable"
+    }
+  }
+}
